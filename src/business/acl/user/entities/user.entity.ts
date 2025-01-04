@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   Entity,
   Column,
@@ -17,7 +18,8 @@ export class User {
   @Column({ comment: '昵称' })
   nickname?: string;
 
-  @Column({ comment: '密码' })
+  @Exclude() // 过滤password
+  @Column({ comment: '密码', select: false })
   password: string;
 
   @Column({ comment: '头像' })

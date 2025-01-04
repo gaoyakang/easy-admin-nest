@@ -1,0 +1,43 @@
+# 应用配置
+http:
+  host: 'localhost'
+  port: 3000
+
+# mysql配置
+db:
+  mysql:
+    host: 'localhost'
+    port: 3306
+    username: 'root'
+    password: '111111qq'
+    database: 'easy-admin'
+
+# log配置
+log:
+  console: true # 控制台日志是否开启
+  daily: true # 文件日志是否开启
+  name: 'EasyAdmin' # 日志前缀
+  label: 'sys' # 当前所处服务
+  level: 'info'
+  format: 'YYYY/MM/DD HH:mm:ss' # 请求发生的时间格式
+  filename: 'logs/%DATE%.log' # 日志保存的文件
+  datePattern: 'YYYY-MM-DD' # 日志保存的文件的date格式
+  zippedArchive: true # 是否压缩备份文件
+  maxSize: '20m' # 日志文件的最大大小，超过后自动分割
+  maxFiles: '14d' # 最多保留 14 天的日志文件
+
+# 加盐加密
+app:
+  saltOrRounds: 10 # 生成盐的复杂度
+
+# jwt配置
+jwt:
+  secret: 'jwt secret' # jwt密钥
+  expiresIn: '60m' # token过期时间
+
+# redis配置
+redis:
+  host: 127.0.0.1 # redis主机
+  port: 6379 # redis端口
+  password: '111111qq' # redis密码
+  EX: 3600 # token过期时间 1h

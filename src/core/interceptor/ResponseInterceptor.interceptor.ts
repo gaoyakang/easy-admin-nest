@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ResultMessages } from 'src/common/constant';
-import { R } from 'src/common/ResultData';
+import { ResultMessages } from 'src/core/common/constant';
+import { R } from 'src/core/common/ResultData';
 
 // 包装200请求返回的结果
 @Injectable()
