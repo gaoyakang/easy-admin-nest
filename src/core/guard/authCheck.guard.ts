@@ -33,19 +33,22 @@ export class AuthCheckGuard implements CanActivate {
     if (!token) {
       throw new UnauthorizedException('请携带token访问');
     }
+
     try {
       // 检查jwt是否合法
       const payload = await this.jwtService.verifyAsync(token);
       request['user'] = payload;
+
       // 检查 Redis 中是否存在该 token
       const tokenInRedis = await this.redisClient.get(`token:${payload.uid}`);
+
       if (!tokenInRedis || tokenInRedis !== token) {
         throw new UnauthorizedException('token无效或已过期');
       }
+      return true;
     } catch {
       throw new UnauthorizedException('token无效或已过期');
     }
-    return true;
   }
 
   // 提取token工具方法

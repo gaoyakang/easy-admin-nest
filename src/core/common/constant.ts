@@ -23,6 +23,7 @@ export enum ResultCode {
   USER_PASSWORD_FAILED = 20217,
   USER_ALREADY_EXIST = 20219,
   UNAUTHORIZED_TOKEN = 20221,
+  PARAM_FORMAT_ERROR = 20223,
 }
 
 export const ResultMessages = {
@@ -46,6 +47,7 @@ export const ResultMessages = {
   [ResultCode.USER_LOGOUT_FAILED]: '退出登陆失败',
   [ResultCode.UNAUTHORIZED_TOKEN]: 'token不存在/失效',
   [ResultCode.USER_WELCOME]: '欢迎访问EasyAdmin接口',
+  [ResultCode.PARAM_FORMAT_ERROR]: '请求参数格式错误',
 };
 
 // 应用错误码：开发者级别

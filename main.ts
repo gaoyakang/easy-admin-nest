@@ -1,11 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './src/app.module';
-import { ValidationPipe } from '@nestjs/common';
 import { ResponseInterceptor } from './src/core/interceptor/ResponseInterceptor.interceptor';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ExceptionResult } from 'src/core/exceptionFilter/ExceptionResult.filter';
 import * as chalk from 'chalk';
 import { AuthCheckGuard } from 'src/core/guard/authCheck.guard';
+import { CustomValidationPipe } from 'src/core/pipe/customValidation.pipe';
 
 async function bootstrap() {
   // 创建应用
@@ -27,21 +27,14 @@ async function bootstrap() {
   const authCheckGuard = app.get(AuthCheckGuard);
   app.useGlobalGuards(authCheckGuard);
 
-  // 验证传参格式
-  app.useGlobalPipes(new ValidationPipe());
-
   // 异常拦截
   app.useGlobalFilters(new ExceptionResult(wc));
 
   // 过滤器: 统一非200的数据返回格式
   app.useGlobalInterceptors(new ResponseInterceptor());
 
-  // 管道:过滤x字段
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-    }),
-  );
+  // 管道:过滤x字段，参数校验，自定义主要是去捕获错误
+  app.useGlobalPipes(new CustomValidationPipe());
   // 文档
   const config = new DocumentBuilder()
     .setTitle('Easy Admin接口文档')

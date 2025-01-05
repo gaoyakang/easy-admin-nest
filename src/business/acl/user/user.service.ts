@@ -12,6 +12,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { WinstonCustom } from 'src/core/log/winstonCustom';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Injectable()
 export class UserService {
@@ -40,12 +41,22 @@ export class UserService {
   }
 
   // 获取所有用户
-  async findAll() {
-    const users = await this.usersRepository.find();
+  async findAll(paginationDto: PaginationDto) {
+    const { page, limit } = paginationDto;
+    const skip = (page - 1) * limit;
+    // 获取总记录数
+    const total = await this.usersRepository.count();
+
+    // 查询分页数据
+    const users = await this.usersRepository.find({
+      skip: skip,
+      take: limit,
+    });
+
     return {
       code: ResultCode.USER_FINDALL_SUCCESS,
       data: {
-        total: users.length,
+        total,
         users,
       },
     };

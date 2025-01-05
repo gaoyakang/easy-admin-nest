@@ -10,7 +10,7 @@ import {
 export class BaseDto {
   @ApiProperty({ description: '用户名' })
   @IsNotEmpty()
-  @Length(5, 12, { message: 'username长度必须在5到12个字符之间' })
+  @Length(4, 12, { message: 'username长度必须在5到12个字符之间' })
   username: string;
 
   @ApiProperty({ description: '昵称' })

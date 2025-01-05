@@ -20,7 +20,7 @@ export class RequestLoggerMiddleware implements NestMiddleware {
       const message = `${ip} - ${method} ${url} - ${statusCode} - ${duration}ms`;
       const logger = this.winstonCustom.genLogger('RequestLoggerMiddleware');
 
-      if (Number(statusCode) < 500) {
+      if (Number(statusCode) <= 300) {
         logger.log(message);
       } else {
         logger.error(message);
