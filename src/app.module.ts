@@ -1,4 +1,3 @@
-// app.module.ts
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -6,11 +5,12 @@ import { UserModule } from './business/acl/user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './core/config/configuration';
 import { MysqlModule } from './core/db/mysql.module';
-import { WinstonCustom } from './core/log/winstonCustom';
-import { RequestLoggerMiddleware } from './core/middleware/request-logger.middleware';
-import { LoginModule } from './business/auth/login.module';
+import { WinstonCustomModule } from './core/log/winstonCustom';
 import { JwtAuthModule } from './core/db/jwt.module';
 import { RedisModule } from './core/db/redis.module';
+import { AuthModule } from './business/auth/auth.module';
+import { RequestLoggerMiddleware } from './core/middleware/requestLogger.middleware';
+import { AuthCheckGuard } from './core/guard/authCheck.guard';
 
 @Module({
   imports: [
@@ -20,21 +20,23 @@ import { RedisModule } from './core/db/redis.module';
       isGlobal: true,
     }),
     // mysql
-    MysqlModule.forRoot(),
+    MysqlModule.forRootAsync(),
     // jwt
     JwtAuthModule.forRoot(),
     // redis
     RedisModule.forRoot(),
+    // logger
+    WinstonCustomModule,
     // 业务模块
     UserModule,
-    LoginModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, WinstonCustom],
-  exports: [WinstonCustom],
+  providers: [AppService, AuthCheckGuard],
+  exports: [],
 })
 export class AppModule {
-  // 配合winston截取请求日志
+  // 配合winston截取请求日志的中间件
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(RequestLoggerMiddleware)

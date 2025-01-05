@@ -8,16 +8,21 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Redis } from 'ioredis';
 import { ConfigService } from '@nestjs/config';
+import { WinstonCustom } from 'src/core/log/winstonCustom';
 
 @Injectable()
-export class LoginService {
+export class AuthService {
+  logger: any;
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService,
     private configService: ConfigService,
     @Inject('REDIS_CLIENT') private redisClient: Redis,
-  ) {}
+    @Inject('WinstonCustom') private winstonCustom: WinstonCustom,
+  ) {
+    this.logger = winstonCustom.genLogger('LoginService');
+  }
 
   // 登陆
   async login(createLoginDto: CreateLoginDto) {
@@ -46,17 +51,30 @@ export class LoginService {
     const token = this.jwtService.sign(payload);
 
     // token存入redis
-    const EX = this.configService.get('redis.EX');
-    await this.redisClient.set(`token:${user.id}`, token, 'EX', EX);
-
-    return {
-      code: ResultCode.USER_LOGIN_SUCCESS,
-      data: { token },
-    };
+    try {
+      const EX = this.configService.get('redis.EX');
+      await this.redisClient.set(`token:${user.id}`, token, 'EX', EX);
+      return {
+        code: ResultCode.USER_LOGIN_SUCCESS,
+        data: { token },
+      };
+    } catch (e) {
+      this.logger.error('redisClient.set ' + e);
+      return {
+        code: ResultCode.USER_LOGIN_FAILED,
+      };
+    }
   }
 
   // 登出
-  // async logout(){
-
-  // }
+  async logout(user) {
+    try {
+      // 直接从 Redis 中删除 token
+      await this.redisClient.del(`token:${user.uid}`);
+      return { code: ResultCode.USER_LOGOUT_SUCCESS };
+    } catch (e) {
+      this.logger.error('logout.redisClient.del' + e.message);
+      return { code: ResultCode.SERVER_EXCEPTION };
+    }
+  }
 }

@@ -1,11 +1,13 @@
-import { Module, DynamicModule } from '@nestjs/common';
+import { Module, DynamicModule, Global } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from 'src/business/acl/user/entities/user.entity';
+import { DataSource } from 'typeorm';
 
+@Global()
 @Module({})
 export class MysqlModule {
-  static async forRoot(): Promise<DynamicModule> {
+  static async forRootAsync(): Promise<DynamicModule> {
     return {
       module: MysqlModule,
       imports: [
@@ -14,7 +16,7 @@ export class MysqlModule {
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory: async (configService: ConfigService) => {
-            return {
+            const options: TypeOrmModuleOptions = {
               type: 'mysql',
               host: configService.get('db.mysql.host'),
               port: configService.get('db.mysql.port'),
@@ -23,7 +25,27 @@ export class MysqlModule {
               database: configService.get('db.mysql.database'),
               entities: [User],
               synchronize: true,
-            } as TypeOrmModuleOptions;
+            };
+            const dataSource = new DataSource({
+              type: 'mysql',
+              username: configService.get('db.mysql.username'),
+              password: configService.get('db.mysql.password'),
+              database: configService.get('db.mysql.database'),
+            });
+            // 尝试初始化连接
+            let isConnected = false;
+            while (!isConnected) {
+              try {
+                await dataSource.initialize();
+                isConnected = true;
+                return options;
+              } catch (error) {
+                error.name = 'MysqlModule';
+                process.emit('uncaughtException', error);
+                // 每隔30s尝试重新链接
+                await new Promise((resolve) => setTimeout(resolve, 15000));
+              }
+            }
           },
         }),
       ],

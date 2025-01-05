@@ -1,4 +1,3 @@
-// redis.module.ts
 import { Module, DynamicModule, Global } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -14,18 +13,27 @@ export class RedisModule {
         {
           provide: 'REDIS_CLIENT',
           useFactory: async (configService: ConfigService) => {
+            // 确保redis服务失效时，应用能感知
             const redisConfig = {
               host: configService.get('redis.host'),
               port: configService.get('redis.port'),
               password: configService.get('redis.password'),
             };
 
-            return new Redis(redisConfig);
+            const client = new Redis(redisConfig);
+
+            // 监听连接错误事件
+            client.on('error', (error) => {
+              // 发送事件并传递错误信息
+              error.name = 'RedisModule';
+              process.emit('uncaughtException', error);
+            });
+            return client;
           },
           inject: [ConfigService],
         },
       ],
-      exports: ['REDIS_CLIENT'], // 确保这里导出了 REDIS_CLIENT
+      exports: ['REDIS_CLIENT'],
     };
   }
 }

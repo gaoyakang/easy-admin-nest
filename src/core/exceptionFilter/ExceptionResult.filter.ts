@@ -10,10 +10,13 @@ import { R } from 'src/core/common/ResultData';
 import { ResultCode, ResultMessages } from '../common/constant';
 import { WinstonCustom } from '../log/winstonCustom';
 
-@Catch()
 // 接口异常拦截器
+@Catch()
 export class ExceptionResult implements ExceptionFilter {
-  constructor(@Inject(WinstonCustom) private winstonCustom: WinstonCustom) {}
+  logger: any;
+  constructor(@Inject('WinstonCustom') private winstonCustom: WinstonCustom) {
+    this.logger = winstonCustom.genLogger('ExceptionResult');
+  }
 
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -26,11 +29,10 @@ export class ExceptionResult implements ExceptionFilter {
       status = exception.getStatus();
       message = exception.message;
     } else {
-      const logger = this.winstonCustom.genLogger();
       // 对于非 HttpException 的异常，尝试从异常对象中提取信息
       status = ResultCode.SERVER_EXCEPTION;
       message = this.extractErrorMessage(exception);
-      logger.log(message, { label: 'exceptionLogger' });
+      this.logger.error(message);
     }
 
     // 使用 R 包装异常数据为统一格式

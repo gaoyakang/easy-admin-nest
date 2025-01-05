@@ -33,11 +33,11 @@ app:
 # jwt配置
 jwt:
   secret: 'jwt secret' # jwt密钥
-  expiresIn: '60m' # token过期时间
+  expiresIn: '7d' # token过期时间,和redis的ex保持一致
 
 # redis配置
 redis:
   host: 127.0.0.1 # redis主机
   port: 6379 # redis端口
   password: '111111qq' # redis密码
-  EX: 3600 # token过期时间 1h
+  EX: 604800 # token过期时间 7d

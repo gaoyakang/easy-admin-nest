@@ -13,12 +13,17 @@ export class JwtAuthModule {
           imports: [ConfigModule],
           inject: [ConfigService],
           useFactory: (configService: ConfigService) => {
-            return {
-              secret: configService.get<string>('jwt.secret'),
-              signOptions: {
-                expiresIn: configService.get<string>('jwt.expiresIn'),
-              },
-            } as JwtModuleOptions;
+            // 确保jwt服务失效时，应用能感知
+            try {
+              return {
+                secret: configService.get<string>('jwt.secret'),
+                signOptions: {
+                  expiresIn: configService.get<string>('jwt.expiresIn'),
+                },
+              } as JwtModuleOptions;
+            } catch (e) {
+              console.log(e);
+            }
           },
         }),
       ],

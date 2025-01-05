@@ -4,8 +4,8 @@ import { WinstonCustom } from '../log/winstonCustom';
 
 @Injectable()
 export class RequestLoggerMiddleware implements NestMiddleware {
-  @Inject()
-  private winstonCustom: WinstonCustom;
+  @Inject('WinstonCustom')
+  private readonly winstonCustom: WinstonCustom;
 
   use(req: Request, res: Response, next: NextFunction) {
     const start = Date.now();
@@ -13,13 +13,18 @@ export class RequestLoggerMiddleware implements NestMiddleware {
     const method = req.method;
     const url = req.originalUrl;
 
+    // 所有路由只要请求了就会进这里
     res.on('finish', () => {
       const duration = Date.now() - start;
       const statusCode = res.statusCode;
       const message = `${ip} - ${method} ${url} - ${statusCode} - ${duration}ms`;
+      const logger = this.winstonCustom.genLogger('RequestLoggerMiddleware');
 
-      const logger = this.winstonCustom.genLogger();
-      logger.log(message, { label: 'MiddlewareLogger' });
+      if (Number(statusCode) < 500) {
+        logger.log(message);
+      } else {
+        logger.error(message);
+      }
     });
 
     next();

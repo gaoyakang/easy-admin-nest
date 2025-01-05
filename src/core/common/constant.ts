@@ -1,3 +1,4 @@
+// 返回结果码：用户级别
 export enum ResultCode {
   // 偶数成功，奇数失败
   SUCCESS = 20000,
@@ -14,10 +15,14 @@ export enum ResultCode {
   USER_FINDALL_FAILED = 20009,
   USER_LOGIN_SUCCESS = 20010,
   USER_LOGIN_FAILED = 20011,
+  USER_LOGOUT_SUCCESS = 20012,
+  USER_LOGOUT_FAILED = 20013,
+  USER_WELCOME = 20014,
 
-  USER_NOT_FOUND = 20013,
-  USER_PASSWORD_FAILED = 20015,
-  USER_ALREADY_EXIST = 20017,
+  USER_NOT_FOUND = 20215,
+  USER_PASSWORD_FAILED = 20217,
+  USER_ALREADY_EXIST = 20219,
+  UNAUTHORIZED_TOKEN = 20221,
 }
 
 export const ResultMessages = {
@@ -37,4 +42,20 @@ export const ResultMessages = {
   [ResultCode.USER_NOT_FOUND]: '用户不存在',
   [ResultCode.USER_PASSWORD_FAILED]: '用户密码错误',
   [ResultCode.USER_ALREADY_EXIST]: '用户已存在',
+  [ResultCode.USER_LOGOUT_SUCCESS]: '退出登陆成功',
+  [ResultCode.USER_LOGOUT_FAILED]: '退出登陆失败',
+  [ResultCode.UNAUTHORIZED_TOKEN]: 'token不存在/失效',
+  [ResultCode.USER_WELCOME]: '欢迎访问EasyAdmin接口',
+};
+
+// 应用错误码：开发者级别
+export enum AppErrorCode {
+  BCRYPT_HASH_FAILED = 30001,
+  USER_SAVE_FAILED = 30003,
+  USERS_REPOSITORY_SEARCH_FAILED = 30005,
+}
+export const AppErrorMessages = {
+  [AppErrorCode.BCRYPT_HASH_FAILED]: 'bcrypt.hash失败',
+  [AppErrorCode.USER_SAVE_FAILED]: 'usersRepository.save失败',
+  [AppErrorCode.USERS_REPOSITORY_SEARCH_FAILED]: 'usersRepository.search失败',
 };
