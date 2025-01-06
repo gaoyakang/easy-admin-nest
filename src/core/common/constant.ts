@@ -18,6 +18,8 @@ export enum ResultCode {
   USER_LOGOUT_SUCCESS = 20012,
   USER_LOGOUT_FAILED = 20013,
   USER_WELCOME = 20014,
+  USER_FINDONE_SUCCESS = 20016,
+  USER_FINDONE_FAILED = 20017,
 
   USER_NOT_FOUND = 20215,
   USER_PASSWORD_FAILED = 20217,
@@ -48,6 +50,8 @@ export const ResultMessages = {
   [ResultCode.UNAUTHORIZED_TOKEN]: 'token不存在/失效',
   [ResultCode.USER_WELCOME]: '欢迎访问EasyAdmin接口',
   [ResultCode.PARAM_FORMAT_ERROR]: '请求参数格式错误',
+  [ResultCode.USER_FINDONE_SUCCESS]: '查询单个用户成功',
+  [ResultCode.USER_FINDONE_FAILED]: '查询单个用户失败',
 };
 
 // 应用错误码：开发者级别

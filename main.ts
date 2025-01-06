@@ -6,6 +6,7 @@ import { ExceptionResult } from 'src/core/exceptionFilter/ExceptionResult.filter
 import * as chalk from 'chalk';
 import { AuthCheckGuard } from 'src/core/guard/authCheck.guard';
 import { CustomValidationPipe } from 'src/core/pipe/customValidation.pipe';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   // 创建应用
@@ -35,6 +36,11 @@ async function bootstrap() {
 
   // 管道:过滤x字段，参数校验，自定义主要是去捕获错误
   app.useGlobalPipes(new CustomValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true, // 确保开启类型转换，用于dto中转换生效
+    }),
+  );
   // 文档
   const config = new DocumentBuilder()
     .setTitle('Easy Admin接口文档')
@@ -60,16 +66,28 @@ bootstrap();
 
 // 捕获应用外的异常，比如mysql断联
 process.on('uncaughtException', (error) => {
-  const appname = chalk.red('[EasyAdmin]');
+  const appname = chalk.red('EasyAdmin');
   const level = chalk.red('ERROR ');
   const label = chalk.yellow(error.name);
-  const date = new Date();
-  const pid = chalk.red(`${process.pid}  - `);
-  const timestamp = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+  const pid = chalk.red(`${process.pid} - `);
+  const timestamp = getFormattedDate();
   const message = error.message
     ? chalk.red(error.message)
     : chalk.red('uncaughtException');
   console.log(
-    `${appname} ${pid} ${timestamp} ${level}[${label}] ${message} \n ${error.stack}`,
+    `[${appname}]  ${pid} ${timestamp}  ${level}[${label}] ${message} \n ${error.stack}`,
   );
 });
+
+function getFormattedDate() {
+  const now = new Date();
+
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // getMonth() 返回 0-11，表示 1-12 月
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+
+  return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+}

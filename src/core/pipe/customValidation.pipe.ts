@@ -22,7 +22,6 @@ export class CustomValidationPipe implements PipeTransform {
         })
         .join('\n');
 
-      console.log(errorMessages);
       throw new BadRequestException(errorMessages);
     }
 

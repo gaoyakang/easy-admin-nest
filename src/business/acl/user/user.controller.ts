@@ -3,14 +3,17 @@ import {
   Get,
   Post,
   Body,
-  Query,
   UseInterceptors,
   ClassSerializerInterceptor,
+  Param,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiTags, ApiBody } from '@nestjs/swagger';
 import { PaginationDto } from './dto/pagination.dto';
+import { SearchUserDto } from './dto/search-user.dto';
+import { SearchConditionDto } from './dto/search-condition.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -18,6 +21,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   // 新增用户
+  // 支持 /user
   @Post()
   @ApiBody({ type: CreateUserDto })
   @UseInterceptors(ClassSerializerInterceptor) // 过滤x字段
@@ -26,17 +30,23 @@ export class UserController {
   }
 
   // 获取所有用户：可以包括分页参数（如 page 和 limit）
-  @Get()
-  @UseInterceptors(ClassSerializerInterceptor) // 过滤x字段
-  findAll(@Query() paginationDto: PaginationDto) {
-    return this.userService.findAll(paginationDto);
+  // 支持：/user/page/limit
+  // 支持：/user/page/limit?keyword=a
+  @Get('/:page/:limit')
+  @ApiBody({ type: CreateUserDto })
+  findAll(
+    @Param() paginationDto: PaginationDto,
+    @Query() searchConditionDto?: SearchConditionDto,
+  ) {
+    return this.userService.findAll(paginationDto, searchConditionDto);
   }
 
   // 获取某个用户
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.userService.findOne(+id);
-  // }
+  // 支持：/user/id
+  @Get(':id')
+  findOne(@Param() searchUserDto: SearchUserDto) {
+    return this.userService.findOne(searchUserDto);
+  }
 
   // // 更新用户
   // @Patch(':id')

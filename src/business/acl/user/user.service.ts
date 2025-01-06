@@ -13,6 +13,8 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { WinstonCustom } from 'src/core/log/winstonCustom';
 import { PaginationDto } from './dto/pagination.dto';
+import { SearchUserDto } from './dto/search-user.dto';
+import { SearchConditionDto } from './dto/search-condition.dto';
 
 @Injectable()
 export class UserService {
@@ -41,25 +43,35 @@ export class UserService {
   }
 
   // 获取所有用户
-  async findAll(paginationDto: PaginationDto) {
-    const { page, limit } = paginationDto;
-    const skip = (page - 1) * limit;
-    // 获取总记录数
-    const total = await this.usersRepository.count();
+  async findAll(
+    paginationDto: PaginationDto,
+    searchConditionDto: SearchConditionDto,
+  ) {
+    try {
+      const { page, limit } = paginationDto;
+      const skip = (page - 1) * limit;
+      const queryBuilder = this.usersRepository.createQueryBuilder('user');
+      if (searchConditionDto.keyword) {
+        queryBuilder.where('user.username LIKE :keyword', {
+          keyword: `%${searchConditionDto.keyword}%`,
+        });
+      }
+      const users = await queryBuilder.skip(skip).take(limit).getMany();
 
-    // 查询分页数据
-    const users = await this.usersRepository.find({
-      skip: skip,
-      take: limit,
-    });
-
-    return {
-      code: ResultCode.USER_FINDALL_SUCCESS,
-      data: {
-        total,
-        users,
-      },
-    };
+      const total = await queryBuilder.getCount();
+      return {
+        code: ResultCode.USER_FINDALL_SUCCESS,
+        data: {
+          total,
+          users,
+        },
+      };
+    } catch (e) {
+      this.logger.error(
+        'queryBuilder.skip(skip).take(limit).getMany() ' + e.message,
+      );
+      return { code: ResultCode.USER_FINDALL_FAILED };
+    }
   }
 
   // 密码加密函数抽离
@@ -119,8 +131,17 @@ export class UserService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  // 根据id查询单个用户
+  async findOne(searchUserDto: SearchUserDto) {
+    try {
+      const data = await this.usersRepository.findOne({
+        where: { id: searchUserDto.id },
+      });
+      return { code: ResultCode.USER_FINDONE_SUCCESS, data: [data] };
+    } catch (e) {
+      this.logger.error('usersRepository.findOne' + e.message);
+      return { code: ResultCode.SERVER_EXCEPTION };
+    }
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
