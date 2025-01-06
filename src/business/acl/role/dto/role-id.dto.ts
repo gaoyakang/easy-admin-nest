@@ -1,16 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import {
-  IsInt,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, Min } from 'class-validator';
 
-export class SearchUserDto {
-  @ApiProperty({ description: '用户id' })
+export class RoleIdDto {
+  @ApiProperty({ description: '角色id' })
   @IsInt({ message: 'id必须为整数' })
   @IsNotEmpty({ message: 'id必须非空' })
   @IsNumber({}, { message: 'id必须是数字' })
@@ -18,9 +11,4 @@ export class SearchUserDto {
   @Type(() => Number)
   @Transform(({ value }) => parseInt(value, 10)) //自动转为10进制数
   id?: number;
-
-  @ApiProperty({ description: '用户名', example: 'a', required: false })
-  @IsOptional()
-  @IsString()
-  username?: string;
 }

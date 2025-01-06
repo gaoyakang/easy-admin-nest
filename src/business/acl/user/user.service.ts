@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Equal, Not, Repository } from 'typeorm';
 import {
   AppErrorCode,
   AppErrorMessages,
@@ -13,8 +13,9 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { WinstonCustom } from 'src/core/log/winstonCustom';
 import { PaginationDto } from './dto/pagination.dto';
-import { SearchUserDto } from './dto/search-user.dto';
+import { UserIdDto } from './dto/user-id.dto';
 import { SearchConditionDto } from './dto/search-condition.dto';
+import { BatchDeleteUserDto } from './dto/batch-delete-user.dto';
 
 @Injectable()
 export class UserService {
@@ -132,7 +133,7 @@ export class UserService {
   }
 
   // 根据id查询单个用户
-  async findOne(searchUserDto: SearchUserDto) {
+  async findOne(searchUserDto: UserIdDto) {
     try {
       const data = await this.usersRepository.findOne({
         where: { id: searchUserDto.id },
@@ -144,12 +145,64 @@ export class UserService {
     }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    console.log(updateUserDto);
-    return `This action updates a #${id} user`;
+  // 更新用户
+  async update(userIdDto: UserIdDto, updateUserDto: UpdateUserDto) {
+    try {
+      // 检查 username 是否存在
+      const existingUser = await this.usersRepository.findOne({
+        where: {
+          username: updateUserDto.username,
+          id: Not(Equal(userIdDto.id)), // 排除当前用户
+        },
+      });
+
+      if (existingUser) {
+        return { code: ResultCode.USERNAME_ALREADY_EXISTS };
+      }
+      await this.usersRepository.update(userIdDto.id, updateUserDto);
+      return { code: ResultCode.USER_UPDATED_SUCCESS };
+    } catch (e) {
+      this.logger.error('usersRepository.update' + e.message);
+      return { code: ResultCode.SERVER_EXCEPTION };
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  // 删除用户
+  async remove(deleteUserDto: UserIdDto) {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { id: deleteUserDto.id },
+      });
+      if (!user) {
+        return { code: ResultCode.USER_NOT_FOUND };
+      }
+      await this.usersRepository.delete(deleteUserDto.id);
+      return { code: ResultCode.USER_DELETED_SUCCESS };
+    } catch (e) {
+      this.logger.error('usersRepository.remove' + e.message);
+      return { code: ResultCode.SERVER_EXCEPTION };
+    }
+  }
+
+  // 批量删除用户
+  async batchRemove(batchDeleteUserDto: BatchDeleteUserDto) {
+    try {
+      const { ids } = batchDeleteUserDto;
+      const result = await this.usersRepository.delete(ids);
+      if (result.affected === 0) {
+        return {
+          code: ResultCode.USER_BATCH_DELETE_SUCCESS,
+          data: { deleted: ids.length },
+        };
+      }
+
+      return {
+        code: ResultCode.USER_BATCH_DELETE_SUCCESS,
+        data: { deleted: ids.length },
+      };
+    } catch (e) {
+      this.logger.error('usersRepository.batchRemove' + e.message);
+      return { code: ResultCode.SERVER_EXCEPTION };
+    }
   }
 }

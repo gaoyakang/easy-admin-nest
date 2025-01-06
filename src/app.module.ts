@@ -11,6 +11,7 @@ import { RedisModule } from './core/db/redis.module';
 import { AuthModule } from './business/auth/auth.module';
 import { RequestLoggerMiddleware } from './core/middleware/requestLogger.middleware';
 import { AuthCheckGuard } from './core/guard/authCheck.guard';
+import { RoleModule } from './business/acl/role/role.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { AuthCheckGuard } from './core/guard/authCheck.guard';
     WinstonCustomModule,
     // 业务模块
     UserModule,
+    RoleModule,
     AuthModule,
   ],
   controllers: [AppController],
