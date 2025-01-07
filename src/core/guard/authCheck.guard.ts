@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express'; // 导入 Express 的 Request 类型
 import Redis from 'ioredis';
 
+// 检查用户是否携带token
 @Injectable()
 export class AuthCheckGuard implements CanActivate {
   constructor(

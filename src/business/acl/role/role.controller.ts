@@ -17,6 +17,7 @@ import { SearchConditionDto } from './dto/search-condition.dto';
 import { RoleIdDto } from './dto/role-id.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { BatchDeleteRoleDto } from './dto/batch-delete-role.dto';
+import { AssignPermissionDto } from './dto/assign-permission.dto';
 
 @ApiTags('role')
 @Controller('role')
@@ -75,5 +76,18 @@ export class RoleController {
   @ApiBody({ type: BatchDeleteRoleDto })
   batchRemove(@Body() deleteRoleDto: BatchDeleteRoleDto) {
     return this.roleService.batchRemove(deleteRoleDto);
+  }
+
+  // 分配权限
+  // 支持 /role/assignPermission
+  @Post('/assignPermission/:id')
+  assignRole(
+    @Param() assignPermissionIdDto: RoleIdDto,
+    @Body() assignPermissionDto: AssignPermissionDto,
+  ) {
+    return this.roleService.assignPermission(
+      assignPermissionIdDto,
+      assignPermissionDto,
+    );
   }
 }

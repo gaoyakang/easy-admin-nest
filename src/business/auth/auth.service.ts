@@ -29,7 +29,7 @@ export class AuthService {
     // 判断用户是否存在
     const user = await this.usersRepository
       .createQueryBuilder('user')
-      .select(['user.id', 'user.username', 'user.password']) // 显式选择需要的字段
+      .select(['user.id', 'user.username', 'user.password', 'user.avatar']) // 显式选择需要的字段
       .where('user.username = :username', { username: createLoginDto.username })
       .getOne();
     if (!user) {
@@ -47,7 +47,11 @@ export class AuthService {
     }
 
     // 密码正确，返回token
-    const payload = { uid: user.id };
+    const payload = {
+      uid: user.id,
+      username: user.username,
+      avatar: user.avatar,
+    };
     const token = this.jwtService.sign(payload);
 
     // token存入redis
@@ -76,5 +80,43 @@ export class AuthService {
       this.logger.error('logout.redisClient.del' + e.message);
       return { code: ResultCode.SERVER_EXCEPTION };
     }
+  }
+
+  // 获取用户信息
+  async info(user) {
+    // 获取当前用户数据
+    const userData = await this.usersRepository.findOne({
+      where: { id: user.uid },
+      relations: ['roles', 'roles.permissions'], // 加载用户的角色以及角色的权限
+    });
+
+    // 提取所需数据
+    // 提取角色名
+    const roles = userData.roles.map((role) => role.rolename);
+
+    // 提取路由和按钮权限
+    const routes = userData.roles
+      .flatMap((role) => role.permissions)
+      // .filter((permission) => permission.type === 1) // type 为 1 的是目录
+      .filter((permission) => permission.route !== '') // 过滤掉 route 为空字符串的权限
+      .map((permission) => permission.route); // 提取 route
+
+    const buttons = userData.roles
+      .flatMap((role) => role.permissions)
+      .filter((permission) => permission.type === 3) // type 为 3 的是按钮
+      .map((permission) => permission.permissionCode);
+
+    // 返回结果
+    return {
+      code: ResultCode.SUCCESS,
+      data: {
+        username: user.username,
+        avatar: user.avatar,
+        routes,
+        buttons,
+        roles,
+        userData,
+      },
+    };
   }
 }

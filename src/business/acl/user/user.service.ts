@@ -16,6 +16,8 @@ import { PaginationDto } from './dto/pagination.dto';
 import { UserIdDto } from './dto/user-id.dto';
 import { SearchConditionDto } from './dto/search-condition.dto';
 import { BatchDeleteUserDto } from './dto/batch-delete-user.dto';
+import { AssignRoleDto } from './dto/assign-role.dto';
+import { UserRole } from './entities/user-role.entity';
 
 @Injectable()
 export class UserService {
@@ -24,6 +26,8 @@ export class UserService {
     private configService: ConfigService,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(UserRole)
+    private userRoleRepository: Repository<UserRole>,
     @Inject('WinstonCustom') private winstonCustom: WinstonCustom,
   ) {
     this.logger = winstonCustom.genLogger('UserService');
@@ -57,6 +61,8 @@ export class UserService {
           keyword: `%${searchConditionDto.keyword}%`,
         });
       }
+      // 加载关联的 roles
+      queryBuilder.leftJoinAndSelect('user.roles', 'role');
       const users = await queryBuilder.skip(skip).take(limit).getMany();
 
       const total = await queryBuilder.getCount();
@@ -72,6 +78,32 @@ export class UserService {
         'queryBuilder.skip(skip).take(limit).getMany() ' + e.message,
       );
       return { code: ResultCode.USER_FINDALL_FAILED };
+    }
+  }
+
+  // 为用户分配角色
+  async assignRole(userIdDto: UserIdDto, assignRoleDto: AssignRoleDto) {
+    try {
+      const { id } = userIdDto;
+      const { ids } = assignRoleDto;
+      // 判断当前id对应的用户是否存在
+      const user = await this.usersRepository.findOne({ where: { id } });
+      if (!user) {
+        return { code: ResultCode.USER_NOT_FOUND }; // 用户不存在的错误码
+      }
+      // 删除用户现有的角色关系
+      await this.userRoleRepository.delete({ userId: id });
+      // 插入新的角色关系
+      const userRoles = ids.map((roleId) => ({
+        userId: id,
+        roleId: roleId,
+      }));
+      await this.userRoleRepository.insert(userRoles);
+
+      return { code: ResultCode.SUCCESS };
+    } catch (e) {
+      this.logger.error('assignRole failed', e);
+      return { code: ResultCode.SERVER_EXCEPTION };
     }
   }
 
@@ -138,6 +170,7 @@ export class UserService {
       const data = await this.usersRepository.findOne({
         where: { id: searchUserDto.id },
       });
+
       return { code: ResultCode.USER_FINDONE_SUCCESS, data: [data] };
     } catch (e) {
       this.logger.error('usersRepository.findOne' + e.message);

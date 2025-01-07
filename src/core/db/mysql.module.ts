@@ -5,6 +5,8 @@ import { User } from 'src/business/acl/user/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { Role } from 'src/business/acl/role/entities/role.entity';
 import { Permission } from 'src/business/acl/permission/entities/permission.entity';
+import { UserRole } from 'src/business/acl/user/entities/user-role.entity';
+import { RolePermission } from 'src/business/acl/role/entities/role-permission.entity';
 
 @Global()
 @Module({})
@@ -25,7 +27,7 @@ export class MysqlModule {
               username: configService.get('db.mysql.username'),
               password: configService.get('db.mysql.password'),
               database: configService.get('db.mysql.database'),
-              entities: [User, Role, Permission],
+              entities: [User, Role, Permission, UserRole, RolePermission],
               synchronize: true,
             };
             const dataSource = new DataSource({

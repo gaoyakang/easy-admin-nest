@@ -12,6 +12,8 @@ import { SearchConditionDto } from './dto/search-condition.dto';
 import { RoleIdDto } from './dto/role-id.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { BatchDeleteRoleDto } from './dto/batch-delete-role.dto';
+import { AssignPermissionDto } from './dto/assign-permission.dto';
+import { RolePermission } from './entities/role-permission.entity';
 
 @Injectable()
 export class RoleService {
@@ -20,6 +22,8 @@ export class RoleService {
     private configService: ConfigService,
     @InjectRepository(Role)
     private rolesRepository: Repository<Role>,
+    @InjectRepository(RolePermission)
+    private rolePermissionRepository: Repository<RolePermission>,
     @Inject('WinstonCustom') private winstonCustom: WinstonCustom,
   ) {
     this.logger = winstonCustom.genLogger('RoleService');
@@ -65,6 +69,9 @@ export class RoleService {
       if (conditions.length > 0) {
         queryBuilder.where(conditions.join(' OR '), params);
       }
+
+      // 加载关联的 permissions
+      queryBuilder.leftJoinAndSelect('role.permissions', 'permissions');
 
       const roles = await queryBuilder.skip(skip).take(limit).getMany();
       const total = await queryBuilder.getCount();
@@ -163,6 +170,35 @@ export class RoleService {
       };
     } catch (e) {
       this.logger.error('rolesRepository.batchRemove' + e.message);
+      return { code: ResultCode.SERVER_EXCEPTION };
+    }
+  }
+
+  // 为角色分配权限
+  async assignPermission(
+    assignPermissionIdDto: RoleIdDto,
+    assignPermissionDto: AssignPermissionDto,
+  ) {
+    try {
+      const { id } = assignPermissionIdDto;
+      const { ids } = assignPermissionDto;
+      // 判断当前id对应的角色是否存在
+      const role = await this.rolesRepository.findOne({ where: { id } });
+      if (!role) {
+        return { code: ResultCode.ROLE_NOT_FOUND }; // 角色不存在的错误码
+      }
+      // 删除角色现有的权限关系
+      await this.rolePermissionRepository.delete({ roleId: id });
+      // 插入新的权限关系
+      const rolePermission = ids.map((permissionId) => ({
+        roleId: id,
+        permissionId: permissionId,
+      }));
+      await this.rolePermissionRepository.insert(rolePermission);
+
+      return { code: ResultCode.SUCCESS };
+    } catch (e) {
+      this.logger.error('assignPermission failed', e);
       return { code: ResultCode.SERVER_EXCEPTION };
     }
   }

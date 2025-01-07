@@ -5,7 +5,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinTable,
+  ManyToMany,
 } from 'typeorm';
+import { Role } from '../../role/entities/role.entity';
 
 @Entity()
 export class User {
@@ -30,6 +33,13 @@ export class User {
 
   @Column({ comment: '邮箱' })
   email?: string;
+
+  // 定义与 Role 的多对多关系
+  @ManyToMany(() => Role)
+  @JoinTable({
+    name: 'user_role',
+  })
+  roles: Role[];
 
   @CreateDateColumn()
   createTime: Date;

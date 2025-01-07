@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Role } from './entities/role.entity';
 import { ConfigModule } from '@nestjs/config';
 import { WinstonCustomModule } from 'src/core/log/winstonCustom';
+import { RolePermission } from './entities/role-permission.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Role]),
+    TypeOrmModule.forFeature([Role, RolePermission]),
     ConfigModule.forRoot(),
     WinstonCustomModule,
   ],

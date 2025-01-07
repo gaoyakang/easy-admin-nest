@@ -4,7 +4,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+import { Role } from '../../role/entities/role.entity';
 
 /**
  * type: 1目录 2菜单 3按钮
@@ -46,6 +49,11 @@ export class Permission {
 
   @Column({ comment: '路由' })
   route: string; // 1是菜单，2是按钮
+
+  // 与role的多对多关联
+  @ManyToMany(() => Role, (role) => role.permissions)
+  @JoinTable({ name: 'role_permission' })
+  roles: Role[];
 
   @CreateDateColumn()
   createTime: Date;

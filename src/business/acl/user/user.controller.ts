@@ -9,6 +9,7 @@ import {
   Query,
   Delete,
   Patch,
+  SetMetadata,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,6 +19,7 @@ import { UserIdDto } from './dto/user-id.dto';
 import { SearchConditionDto } from './dto/search-condition.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { BatchDeleteUserDto } from './dto/batch-delete-user.dto';
+import { AssignRoleDto } from './dto/assign-role.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -26,6 +28,7 @@ export class UserController {
 
   // 新增用户
   // 支持 /user
+  // @isPublic() // 放行, 不检测token
   @Post()
   @ApiBody({ type: CreateUserDto })
   @UseInterceptors(ClassSerializerInterceptor) // 过滤x字段
@@ -36,6 +39,7 @@ export class UserController {
   // 获取所有用户：可以包括分页参数（如 page 和 limit）
   // 支持：/user/page/limit
   // 支持：/user/page/limit?keyword=a
+  @SetMetadata('requiredPermissions', ['btn.User.querya']) // 用于检查用户是否有使用该接口的权限
   @Get('/:page/:limit')
   @ApiBody({ type: CreateUserDto })
   findAll(
@@ -77,5 +81,15 @@ export class UserController {
   @ApiBody({ type: BatchDeleteUserDto })
   batchRemove(@Body() deleteUserDto: BatchDeleteUserDto) {
     return this.userService.batchRemove(deleteUserDto);
+  }
+
+  // 分配角色
+  // 支持 /user/assignRole
+  @Post('/assignRole/:id')
+  assignRole(
+    @Param() assignRoleIdDto: UserIdDto,
+    @Body() assignRoleDto: AssignRoleDto,
+  ) {
+    return this.userService.assignRole(assignRoleIdDto, assignRoleDto);
   }
 }

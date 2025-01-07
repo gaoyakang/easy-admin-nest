@@ -1,6 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { CreatePermissionDto } from './dto/create-permission.dto';
-// import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permission } from './entities/permission.entity';
 import { Equal, Not, Repository } from 'typeorm';
@@ -12,10 +11,6 @@ import { SearchConditionDto } from './dto/search-condition.dto';
 import { PermissionIdDto } from './dto/permission-id.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { BatchDeletePermissionDto } from './dto/batch-delete-permission.dto';
-// import { PaginationDto } from './dto/pagination.dto';
-// import { UserIdDto } from './dto/user-id.dto';
-// import { SearchConditionDto } from './dto/search-condition.dto';
-// import { BatchDeleteUserDto } from './dto/batch-delete-user.dto';
 
 @Injectable()
 export class PermissionService {
@@ -69,15 +64,17 @@ export class PermissionService {
       }
 
       // 检查 route 是否存在
-      const permissionByRoute = await this.permissionRepository
-        .createQueryBuilder('permission')
-        .where('permission.route = :route', {
-          route: createPermissionDto.route,
-        })
-        .getOne();
+      if (createPermissionDto.route) {
+        const permissionByRoute = await this.permissionRepository
+          .createQueryBuilder('permission')
+          .where('permission.route = :route', {
+            route: createPermissionDto.route,
+          })
+          .getOne();
 
-      if (permissionByRoute) {
-        return { code: ResultCode.ROUTE_ALREADY_EXISTS };
+        if (permissionByRoute) {
+          return { code: ResultCode.ROUTE_ALREADY_EXISTS };
+        }
       }
 
       // 如果所有字段都不存在，则返回 false

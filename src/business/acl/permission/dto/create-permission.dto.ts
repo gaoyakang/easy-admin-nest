@@ -25,6 +25,5 @@ export class CreatePermissionDto extends BaseDto {
   type: string;
 
   @ApiProperty({ description: '权限路由' })
-  @IsNotEmpty({ message: 'route不能为空' })
-  route: string;
+  route?: string;
 }
