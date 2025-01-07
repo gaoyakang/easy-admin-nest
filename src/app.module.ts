@@ -12,6 +12,7 @@ import { AuthModule } from './business/auth/auth.module';
 import { RequestLoggerMiddleware } from './core/middleware/requestLogger.middleware';
 import { AuthCheckGuard } from './core/guard/authCheck.guard';
 import { RoleModule } from './business/acl/role/role.module';
+import { PermissionModule } from './business/acl/permission/permission.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { RoleModule } from './business/acl/role/role.module';
     // 业务模块
     UserModule,
     RoleModule,
+    PermissionModule,
     AuthModule,
   ],
   controllers: [AppController],
