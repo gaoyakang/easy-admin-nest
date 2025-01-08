@@ -11,4 +11,18 @@ export class AppController {
   getHello() {
     return this.appService.getHello();
   }
+
+  // 初始化创建
+  @isPublic()
+  @Get('/init')
+  init() {
+    return this.appService.init();
+  }
+
+  // 清除数据库
+  @isPublic()
+  @Get('/clear')
+  clear() {
+    return this.appService.clear();
+  }
 }

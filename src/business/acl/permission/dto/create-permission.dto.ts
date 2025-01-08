@@ -5,12 +5,12 @@ import { Transform, Type } from 'class-transformer';
 export class CreatePermissionDto extends BaseDto {
   @ApiProperty({ description: '权限名' })
   @IsNotEmpty()
-  @Length(4, 15, { message: 'permissionName长度必须在2到15个字符之间' })
+  @Length(2, 25, { message: 'permissionName长度必须在2到25个字符之间' })
   permissionName: string;
 
   @ApiProperty({ description: '权限码' })
   @IsNotEmpty()
-  @Length(2, 15, { message: 'permissionCode长度必须在2到15个字符之间' })
+  @Length(2, 25, { message: 'permissionCode长度必须在2到25个字符之间' })
   permissionCode: string;
 
   @ApiProperty({ description: '父级权限id' })
@@ -22,7 +22,7 @@ export class CreatePermissionDto extends BaseDto {
 
   @ApiProperty({ description: '权限类型' })
   @IsNotEmpty({ message: 'type不能为空' })
-  type: string;
+  type: number;
 
   @ApiProperty({ description: '权限路由' })
   route?: string;

@@ -17,7 +17,12 @@ export enum ResultCode {
   SUCCESS = 20000, // 通用操作成功
   ERROR = 20001, // 通用操作失败
   USER_WELCOME = 20002, // 欢迎
+  INIT_DATABASE_FAILED = 20003, // 初始化数据库失败
+  INIT_DATABASE_SUCCESS = 20004, // 初始化数据库成功
+  CLEAR_DATABASE_FAILED = 2005, // 清理数据库失败
+  CLEAR_DATABASE_SUCCESS = 2006, // 清理数据库失败
   UNAUTHORIZED_TOKEN = 40001, // token不存在/失效
+  NO_INTERFACE_PERMISSION = 40003, // 缺少接口权限
   SERVER_EXCEPTION = 50000, //系统错误
 
   USER_CREATED_SUCCESS = 20300, // 创建用户成功
@@ -84,6 +89,11 @@ export const ResultMessages = {
   [ResultCode.SUCCESS]: '操作成功',
   [ResultCode.ERROR]: '操作失败',
   [ResultCode.USER_WELCOME]: '欢迎访问EasyAdmin接口',
+  [ResultCode.INIT_DATABASE_SUCCESS]: '初始化数据库成功',
+  [ResultCode.INIT_DATABASE_FAILED]: '初始化数据库失败',
+  [ResultCode.CLEAR_DATABASE_SUCCESS]: '清理数据库成功',
+  [ResultCode.CLEAR_DATABASE_FAILED]: '清理数据库失败',
+  [ResultCode.NO_INTERFACE_PERMISSION]: '无权访问当前接口',
   [ResultCode.UNAUTHORIZED_TOKEN]: 'token不存在/失效',
   [ResultCode.SERVER_EXCEPTION]: '系统异常',
 

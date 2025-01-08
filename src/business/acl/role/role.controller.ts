@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  SetMetadata,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
@@ -28,6 +29,7 @@ export class RoleController {
   // 支持 /role
   @Post()
   @ApiBody({ type: CreateRoleDto })
+  @SetMetadata('requiredPermissions', ['btn.Role.add']) // 用于检查用户是否有使用该接口的权限
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.roleService.create(createRoleDto);
   }
@@ -37,6 +39,7 @@ export class RoleController {
   // 支持：/role/page/limit?keyword=a
   @Get('/:page/:limit')
   @ApiBody({ type: CreateRoleDto })
+  @SetMetadata('requiredPermissions', ['btn.Role.queryAll']) // 用于检查用户是否有使用该接口的权限
   findAll(
     @Param() paginationDto: PaginationDto,
     @Query() searchConditionDto?: SearchConditionDto,
@@ -47,6 +50,7 @@ export class RoleController {
   // 获取某个角色
   // 支持：/role/id
   @Get(':id')
+  @SetMetadata('requiredPermissions', ['btn.Role.queryOne']) // 用于检查用户是否有使用该接口的权限
   findOne(@Param() searchRoleDto: RoleIdDto) {
     return this.roleService.findOne(searchRoleDto);
   }
@@ -55,6 +59,7 @@ export class RoleController {
   // 支持：/role/id
   @Patch(':id')
   @ApiBody({ type: RoleIdDto })
+  @SetMetadata('requiredPermissions', ['btn.Role.update']) // 用于检查用户是否有使用该接口的权限
   update(
     @Param() updateRoleIdDto: RoleIdDto,
     @Body() updateRoleDto: UpdateRoleDto,
@@ -66,6 +71,7 @@ export class RoleController {
   // 支持：/role/id
   @Delete(':id')
   @ApiBody({ type: RoleIdDto })
+  @SetMetadata('requiredPermissions', ['btn.Role.deleteOne']) // 用于检查用户是否有使用该接口的权限
   remove(@Param() deleteUserDto: RoleIdDto) {
     return this.roleService.remove(deleteUserDto);
   }
@@ -74,6 +80,7 @@ export class RoleController {
   // 支持：/role
   @Delete()
   @ApiBody({ type: BatchDeleteRoleDto })
+  @SetMetadata('requiredPermissions', ['btn.Role.batchDelete']) // 用于检查用户是否有使用该接口的权限
   batchRemove(@Body() deleteRoleDto: BatchDeleteRoleDto) {
     return this.roleService.batchRemove(deleteRoleDto);
   }
@@ -81,7 +88,8 @@ export class RoleController {
   // 分配权限
   // 支持 /role/assignPermission
   @Post('/assignPermission/:id')
-  assignRole(
+  @SetMetadata('requiredPermissions', ['btn.Role.assignPermission']) // 用于检查用户是否有使用该接口的权限
+  assignPermission(
     @Param() assignPermissionIdDto: RoleIdDto,
     @Body() assignPermissionDto: AssignPermissionDto,
   ) {

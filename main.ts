@@ -5,6 +5,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ExceptionResult } from 'src/core/exceptionFilter/ExceptionResult.filter';
 import * as chalk from 'chalk';
 import { AuthCheckGuard } from 'src/core/guard/authCheck.guard';
+import { PermissionCheckGuard } from 'src/core/guard/permissionCheck.guard';
 import { CustomValidationPipe } from 'src/core/pipe/customValidation.pipe';
 import { ValidationPipe } from '@nestjs/common';
 
@@ -24,9 +25,9 @@ async function bootstrap() {
   // 设置全局路由前缀
   app.setGlobalPrefix('api/v1/');
 
-  // auth守卫
-  const authCheckGuard = app.get(AuthCheckGuard);
-  app.useGlobalGuards(authCheckGuard);
+  // 守卫：检查token和接口权限
+  app.useGlobalGuards(app.get(AuthCheckGuard));
+  app.useGlobalGuards(app.get(PermissionCheckGuard));
 
   // 异常拦截
   app.useGlobalFilters(new ExceptionResult(wc));

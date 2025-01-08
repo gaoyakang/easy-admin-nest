@@ -24,13 +24,19 @@ export class ExceptionResult implements ExceptionFilter {
 
     let status: number;
     let message: string;
+    let code: number;
 
     if (exception instanceof HttpException) {
-      status = exception.getStatus();
+      status = code = exception.getStatus();
       message = exception.message;
+      if (status === 403) {
+        code = ResultCode.NO_INTERFACE_PERMISSION;
+        message = ResultMessages[ResultCode.NO_INTERFACE_PERMISSION];
+      }
     } else {
       // 对于非 HttpException 的异常，尝试从异常对象中提取信息
-      status = ResultCode.SERVER_EXCEPTION;
+      status = 500;
+      code = ResultCode.SERVER_EXCEPTION;
       message = this.extractErrorMessage(exception);
       this.logger.error(message);
     }
@@ -38,7 +44,7 @@ export class ExceptionResult implements ExceptionFilter {
     // 使用 R 包装异常数据为统一格式
     response
       .status(status)
-      .json(R.error().setCode(status).setMessage(message).setData([]));
+      .json(R.error().setCode(code).setMessage(message).setData([]));
   }
 
   private extractErrorMessage(exception: any): string {

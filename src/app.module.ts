@@ -13,6 +13,13 @@ import { RequestLoggerMiddleware } from './core/middleware/requestLogger.middlew
 import { AuthCheckGuard } from './core/guard/authCheck.guard';
 import { RoleModule } from './business/acl/role/role.module';
 import { PermissionModule } from './business/acl/permission/permission.module';
+import { PermissionCheckGuard } from './core/guard/permissionCheck.guard';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './business/acl/user/entities/user.entity';
+import { Role } from './business/acl/role/entities/role.entity';
+import { Permission } from './business/acl/permission/entities/permission.entity';
+import { UserRole } from './business/acl/user/entities/user-role.entity';
+import { RolePermission } from './business/acl/role/entities/role-permission.entity';
 
 @Module({
   imports: [
@@ -23,6 +30,14 @@ import { PermissionModule } from './business/acl/permission/permission.module';
     }),
     // mysql
     MysqlModule.forRootAsync(),
+    TypeOrmModule.forFeature([
+      User,
+      Role,
+      Permission,
+      UserRole,
+      RolePermission,
+    ]), //为了PermissionCheckGuard使用
+
     // jwt
     JwtAuthModule.forRoot(),
     // redis
@@ -36,8 +51,8 @@ import { PermissionModule } from './business/acl/permission/permission.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AuthCheckGuard],
-  exports: [],
+  providers: [AppService, AuthCheckGuard, PermissionCheckGuard],
+  exports: [PermissionCheckGuard],
 })
 export class AppModule {
   // 配合winston截取请求日志的中间件

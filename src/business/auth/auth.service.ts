@@ -115,7 +115,7 @@ export class AuthService {
         routes,
         buttons,
         roles,
-        userData,
+        // userData,
       },
     };
   }
