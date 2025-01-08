@@ -7,9 +7,13 @@ export class BatchDeleteUserDto {
   @IsArray({ message: 'ids必须为数组' })
   @Type(() => Number)
   @Transform(({ obj }) => {
-    // 转为数组
-    const data = JSON.parse(obj.ids);
-    return data;
+    if (obj.ids instanceof Array) {
+      return obj.ids;
+    } else {
+      // 转为数组
+      const data = JSON.parse(obj.ids);
+      return data;
+    }
   })
   ids: number[];
 }

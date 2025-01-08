@@ -42,7 +42,6 @@ export class AuthCheckGuard implements CanActivate {
 
       // 检查 Redis 中是否存在该 token
       const tokenInRedis = await this.redisClient.get(`token:${payload.uid}`);
-
       if (!tokenInRedis || tokenInRedis !== token) {
         throw new UnauthorizedException('token无效或已过期');
       }

@@ -108,7 +108,7 @@ export class AuthService {
 
     // 返回结果
     return {
-      code: ResultCode.SUCCESS,
+      code: ResultCode.USER_INFO_SUCCESS,
       data: {
         username: user.username,
         avatar: user.avatar,

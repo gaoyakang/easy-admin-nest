@@ -64,13 +64,22 @@ export class UserService {
       // 加载关联的 roles
       queryBuilder.leftJoinAndSelect('user.roles', 'role');
       const users = await queryBuilder.skip(skip).take(limit).getMany();
-
+      // 处理用户数据，将 roles 转换为 roleName 并删除 roles 属性
+      const processedUsers = users
+        .map((user) => ({
+          ...user,
+          roleName: user.roles.map((role) => role.rolename).join(', '),
+        }))
+        .map((user) => {
+          delete user.roles; // 删除 roles 属性
+          return user;
+        });
       const total = await queryBuilder.getCount();
       return {
         code: ResultCode.USER_FINDALL_SUCCESS,
         data: {
           total,
-          users,
+          users: processedUsers,
         },
       };
     } catch (e) {
@@ -126,7 +135,7 @@ export class UserService {
   }
 
   // 用户入库函数抽离
-  async _saveUser(createUserDto) {
+  async _saveUser(createUserDto: CreateUserDto) {
     try {
       // 保存用户
       await this.usersRepository.save(createUserDto);
@@ -192,6 +201,7 @@ export class UserService {
       if (existingUser) {
         return { code: ResultCode.USERNAME_ALREADY_EXISTS };
       }
+      console.log(userIdDto.id, updateUserDto);
       await this.usersRepository.update(userIdDto.id, updateUserDto);
       return { code: ResultCode.USER_UPDATED_SUCCESS };
     } catch (e) {

@@ -47,7 +47,7 @@ export class Permission {
   @Column({ comment: '权限类型' })
   type: number; // 1是目录，2是菜单，3是按钮
 
-  @Column({ comment: '路由' })
+  @Column({ comment: '路由', nullable: true })
   route: string; // 1是菜单，2是按钮
 
   // 与role的多对多关联
