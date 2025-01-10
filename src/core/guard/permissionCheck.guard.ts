@@ -38,7 +38,6 @@ export class PermissionCheckGuard implements CanActivate {
     }
     // 获取当前请求的权限要求
     const requiredPermissions = this.getRequiredPermissions(context);
-    // console.log('所需权限：', requiredPermissions);
     if (!requiredPermissions || requiredPermissions.length === 0) {
       return true; // 如果没有权限要求，则允许访问
     }
@@ -52,7 +51,6 @@ export class PermissionCheckGuard implements CanActivate {
     // 获取角色的权限
     const userPermissions = await this.getPermissionsFromRoles(userRoles.roles);
 
-    // console.log('已有权限', userPermissions);
     // 检查用户是否具有所有必需的权限
     return requiredPermissions.every((permission) =>
       userPermissions.includes(permission),

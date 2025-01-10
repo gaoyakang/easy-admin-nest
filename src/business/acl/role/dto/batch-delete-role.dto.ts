@@ -7,8 +7,13 @@ export class BatchDeleteRoleDto {
   @IsArray({ message: 'ids必须为数组' })
   @Type(() => Number)
   @Transform(({ obj }) => {
-    // 转为数组
-    const data = JSON.parse(obj.ids);
+    let data;
+    if (obj.ids instanceof Array) {
+      data = obj.ids;
+    } else {
+      // 转为数组
+      data = JSON.parse(obj.ids);
+    }
     return data;
   })
   ids: number[];

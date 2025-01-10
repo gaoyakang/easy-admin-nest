@@ -26,6 +26,14 @@ import { AssignRoleDto } from './dto/assign-role.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  // 获取角色(要放在前面保证不被通用路由劫持)
+  // 支持/user/getAssignRole
+  @Get('/getAssignRole/:id')
+  @SetMetadata('requiredPermissions', ['btn.User.getAssignRole']) // 用于检查用户是否有使用该接口的权限
+  getAssignRole(@Param() userIdDto: UserIdDto) {
+    return this.userService.getAssignRole(userIdDto);
+  }
+
   // 新增用户
   // 支持 /user
   // @isPublic() // 放行, 不检测token
@@ -67,7 +75,6 @@ export class UserController {
     @Param() updateUserIdDto: UserIdDto,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    console.log(updateUserDto);
     return this.userService.update(updateUserIdDto, updateUserDto);
   }
 

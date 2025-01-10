@@ -6,10 +6,11 @@ import { User } from './entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
 import { WinstonCustomModule } from 'src/core/log/winstonCustom';
 import { UserRole } from './entities/user-role.entity';
+import { Role } from '../role/entities/role.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, UserRole]),
+    TypeOrmModule.forFeature([User, UserRole, Role]),
     ConfigModule.forRoot(),
     WinstonCustomModule,
   ],

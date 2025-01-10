@@ -18,6 +18,7 @@ import { SearchConditionDto } from './dto/search-condition.dto';
 import { BatchDeleteUserDto } from './dto/batch-delete-user.dto';
 import { AssignRoleDto } from './dto/assign-role.dto';
 import { UserRole } from './entities/user-role.entity';
+import { Role } from '../role/entities/role.entity';
 
 @Injectable()
 export class UserService {
@@ -28,6 +29,8 @@ export class UserService {
     private usersRepository: Repository<User>,
     @InjectRepository(UserRole)
     private userRoleRepository: Repository<UserRole>,
+    @InjectRepository(Role)
+    private rolesRepository: Repository<Role>,
     @Inject('WinstonCustom') private winstonCustom: WinstonCustom,
   ) {
     this.logger = winstonCustom.genLogger('UserService');
@@ -100,18 +103,64 @@ export class UserService {
       if (!user) {
         return { code: ResultCode.USER_NOT_FOUND }; // 用户不存在的错误码
       }
-      // 删除用户现有的角色关系
-      await this.userRoleRepository.delete({ userId: id });
-      // 插入新的角色关系
-      const userRoles = ids.map((roleId) => ({
-        userId: id,
-        roleId: roleId,
-      }));
-      await this.userRoleRepository.insert(userRoles);
+      try {
+        // 删除用户现有的角色关系
+        await this.userRoleRepository.delete({ userId: id });
+        try {
+          // 插入新的角色关系
+          const userRoles = ids.map((roleId) => ({
+            userId: id,
+            roleId: roleId,
+          }));
+          await this.userRoleRepository.insert(userRoles);
 
-      return { code: ResultCode.SUCCESS };
+          return { code: ResultCode.USER_ASSIGN_ROLE_SUCCESS };
+        } catch (e) {
+          this.logger.error('assignRole failed', e);
+          return { code: ResultCode.SERVER_EXCEPTION };
+        }
+      } catch (e) {
+        this.logger.error('assignRole failed', e);
+        return { code: ResultCode.SERVER_EXCEPTION };
+      }
     } catch (e) {
       this.logger.error('assignRole failed', e);
+      return { code: ResultCode.SERVER_EXCEPTION };
+    }
+  }
+
+  // 获取用户所有角色
+  async getAssignRole(userIdDto: UserIdDto) {
+    try {
+      // 获取当前用户的所有角色
+      const user = await this.usersRepository.findOne({
+        where: { id: userIdDto.id },
+        relations: ['roles'],
+      });
+      if (!user) {
+        return { code: ResultCode.USER_NOT_FOUND }; // 用户不存在的错误码
+      }
+      const assignRoles = user.roles.map((role) => ({
+        id: role.id,
+        rolename: role.rolename,
+        label: role.label,
+      }));
+
+      // 获取系统中所有的角色
+      // 获取系统中所有的角色
+      const allRoles = await this.rolesRepository.find({
+        select: ['id', 'rolename', 'label'], // 选择需要的字段
+      });
+
+      return {
+        code: ResultCode.USER_GET_ASSIGN_ROLE_SUCCESS,
+        data: {
+          assignRoles, // 当前用户拥有的角色
+          allRolesList: allRoles, // 系统所有角色
+        },
+      };
+    } catch (e) {
+      this.logger.error('getAssignRole failed', e);
       return { code: ResultCode.SERVER_EXCEPTION };
     }
   }
@@ -201,7 +250,6 @@ export class UserService {
       if (existingUser) {
         return { code: ResultCode.USERNAME_ALREADY_EXISTS };
       }
-      console.log(userIdDto.id, updateUserDto);
       await this.usersRepository.update(userIdDto.id, updateUserDto);
       return { code: ResultCode.USER_UPDATED_SUCCESS };
     } catch (e) {
@@ -219,6 +267,10 @@ export class UserService {
       if (!user) {
         return { code: ResultCode.USER_NOT_FOUND };
       }
+      // TODO: 添加事务
+      // 先清空中间表中相关数据
+      await this.userRoleRepository.delete({ userId: deleteUserDto.id });
+      // 再删除用户
       await this.usersRepository.delete(deleteUserDto.id);
       return { code: ResultCode.USER_DELETED_SUCCESS };
     } catch (e) {

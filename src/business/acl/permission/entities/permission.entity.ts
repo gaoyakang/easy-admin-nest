@@ -60,4 +60,11 @@ export class Permission {
 
   @UpdateDateColumn()
   updateTime: Date;
+
+  // 方便生成tree结构
+  // 添加 children 属性
+  children: Permission[];
+
+  // 方便前端知晓用户是否拥有当前权限
+  select: boolean;
 }

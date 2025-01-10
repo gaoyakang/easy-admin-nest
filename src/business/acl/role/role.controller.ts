@@ -25,6 +25,14 @@ import { AssignPermissionDto } from './dto/assign-permission.dto';
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
+  // 获取权限(要放在前面保证不被通用路由劫持)
+  // 支持/role/getAssignPermission
+  @Get('/getAssignPermission/:id')
+  @SetMetadata('requiredPermissions', ['btn.Role.getAssignPermission']) // 用于检查用户是否有使用该接口的权限
+  getAssignPermission(@Param() roleIdDto: RoleIdDto) {
+    return this.roleService.getAssignPermission(roleIdDto);
+  }
+
   // 新增角色
   // 支持 /role
   @Post()

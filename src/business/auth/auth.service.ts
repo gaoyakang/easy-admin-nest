@@ -89,6 +89,10 @@ export class AuthService {
       where: { id: user.uid },
       relations: ['roles', 'roles.permissions'], // 加载用户的角色以及角色的权限
     });
+    // admin用户：超级管理员角色+普通用户角色
+    // test用户：普通用户角色
+    // 超级管理员角色：权限
+    // 普通用户角色：权限
 
     // 提取所需数据
     // 提取角色名

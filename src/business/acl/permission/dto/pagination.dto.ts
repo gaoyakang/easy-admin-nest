@@ -14,7 +14,7 @@ export class PaginationDto {
   @ApiProperty({ description: '条数' })
   @IsNumber({}, { message: 'limit必须是数字' })
   @Min(1, { message: 'limit必须大于等于1' })
-  @Max(20, { message: 'limit不能超过20' })
+  @Max(999, { message: 'limit不能超过999' })
   @IsNotEmpty()
   @Type(() => Number)
   @Transform(({ value }) => parseInt(value, 10)) //自动转为10进制数

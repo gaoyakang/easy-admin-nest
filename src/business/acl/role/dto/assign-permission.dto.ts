@@ -8,7 +8,12 @@ export class AssignPermissionDto {
   @Type(() => Number)
   @Transform(({ obj }) => {
     // 转为数组
-    const data = JSON.parse(obj.ids);
+    let data;
+    if (obj.ids instanceof Array) {
+      data = obj.ids;
+    } else {
+      data = JSON.parse(obj.ids);
+    }
     return data;
   })
   ids: number[];
