@@ -123,6 +123,7 @@ export class RoleService {
 
     return tree; // 返回构建好的树形结构
   }
+
   // _buildTree(items: Permission[], assignRoles: Permission[]): Permission[] {
   //   const itemMap: { [key: number]: Permission } = {};
   //   const tree: Permission[] = [];
@@ -293,10 +294,7 @@ export class RoleService {
   async batchRemove(batchDeleteRoleDto: BatchDeleteRoleDto) {
     try {
       const { ids } = batchDeleteRoleDto;
-      //  TODO: 加事务
-      // 提前将role_permission相关的数据清空
-      await this.rolePermissionRepository.delete(ids);
-      // 然后将角色删除
+      // 角色删除
       const result = await this.rolesRepository.delete(ids);
       if (result.affected === 0) {
         return {

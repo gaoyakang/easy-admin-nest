@@ -142,7 +142,7 @@ export class PermissionService {
         code: ResultCode.PERMISSION_FINDALL_SUCCESS,
         data: {
           total,
-          permissions,
+          permissions: this._buildTree(permissions),
         },
       };
     } catch (e) {
@@ -151,6 +151,32 @@ export class PermissionService {
       );
       return { code: ResultCode.SERVER_EXCEPTION };
     }
+  }
+
+  _buildTree(permissions) {
+    // 创建一个映射，用于存储每个节点
+    const nodeMap = new Map<number, any>();
+
+    // 遍历permissions数组，将每个节点添加到映射中
+    permissions.forEach((node) => {
+      nodeMap.set(node.id, { ...node, children: [] });
+    });
+
+    // 再次遍历permissions数组，将每个节点根据其pid关联到对应的父节点的children属性中
+    permissions.forEach((node) => {
+      if (node.pid !== 0) {
+        const parentNode = nodeMap.get(node.pid);
+        if (parentNode) {
+          parentNode.children.push(nodeMap.get(node.id));
+        }
+      }
+    });
+
+    // 从映射中提取所有根节点（pid为0的节点）作为树的根
+    const treeData = Array.from(nodeMap.values()).filter(
+      (node) => node.pid === 0,
+    );
+    return treeData;
   }
 
   // 根据id查询单个权限
