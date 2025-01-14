@@ -103,7 +103,7 @@ export class AppService {
       type: 1,
       permissionCode: 'All',
     };
-    // 一级
+    // 一级-2
     const permission1: CreatePermissionDto = {
       permissionName: '系统管理',
       pid: 1,
@@ -132,7 +132,8 @@ export class AppService {
       type: 1,
       permissionCode: 'Tool',
     };
-    // 二级
+
+    // 二级-6
     const permission5: CreatePermissionDto = {
       permissionName: '用户管理',
       pid: 2,
@@ -175,7 +176,8 @@ export class AppService {
       type: 2,
       permissionCode: 'GenCode',
     };
-    // 三级
+
+    // 三级-12
     const permission11: CreatePermissionDto = {
       permissionName: '新增用户',
       pid: 6,
@@ -219,119 +221,204 @@ export class AppService {
       permissionCode: 'btn.User.queryAll',
     };
     const permission17: CreatePermissionDto = {
+      permissionName: '重置用户搜索',
+      pid: 6,
+      route: '',
+      type: 3,
+      permissionCode: 'btn.User.resetQueryOne',
+    };
+
+    const permission18: CreatePermissionDto = {
       permissionName: '获取用户角色',
       pid: 6,
       route: '',
       type: 3,
       permissionCode: 'btn.User.getAssignRole',
     };
-    const permission18: CreatePermissionDto = {
+    const permission19: CreatePermissionDto = {
       permissionName: '分配用户角色',
       pid: 6,
       route: '',
       type: 3,
       permissionCode: 'btn.User.assignRole',
     };
-    const permission19: CreatePermissionDto = {
+    const permission20: CreatePermissionDto = {
       permissionName: '新增角色',
       pid: 7,
       route: '',
       type: 3,
       permissionCode: 'btn.Role.add',
     };
-    const permission20: CreatePermissionDto = {
+    const permission21: CreatePermissionDto = {
       permissionName: '删除单个角色',
       pid: 7,
       route: '',
       type: 3,
       permissionCode: 'btn.Role.deleteOne',
     };
-    const permission21: CreatePermissionDto = {
+    const permission22: CreatePermissionDto = {
       permissionName: '批量删除角色',
       pid: 7,
       route: '',
       type: 3,
       permissionCode: 'btn.Role.batchDelete',
     };
-    const permission22: CreatePermissionDto = {
+    const permission23: CreatePermissionDto = {
       permissionName: '修改角色',
       pid: 7,
       route: '',
       type: 3,
       permissionCode: 'btn.Role.update',
     };
-    const permission23: CreatePermissionDto = {
+    const permission24: CreatePermissionDto = {
       permissionName: '查询单个角色',
       pid: 7,
       route: '',
       type: 3,
       permissionCode: 'btn.Role.queryOne',
     };
-    const permission24: CreatePermissionDto = {
+    const permission25: CreatePermissionDto = {
       permissionName: '查询所有角色',
       pid: 7,
       route: '',
       type: 3,
       permissionCode: 'btn.Role.queryAll',
     };
-    const permission25: CreatePermissionDto = {
+    const permission26: CreatePermissionDto = {
       permissionName: '获取角色权限',
       pid: 7,
       route: '',
       type: 3,
       permissionCode: 'btn.Role.getAssignPermission',
     };
-    const permission26: CreatePermissionDto = {
+    const permission27: CreatePermissionDto = {
       permissionName: '赋予角色权限',
       pid: 7,
       route: '',
       type: 3,
       permissionCode: 'btn.Role.assignPermission',
     };
+    const permission28: CreatePermissionDto = {
+      permissionName: '重置角色搜索',
+      pid: 7,
+      route: '',
+      type: 3,
+      permissionCode: 'btn.Role.resetQueryOne',
+    };
 
-    const permission27: CreatePermissionDto = {
+    const permission29: CreatePermissionDto = {
       permissionName: '新增权限',
       pid: 8,
       route: '',
       type: 3,
       permissionCode: 'btn.Permission.add',
     };
-    const permission28: CreatePermissionDto = {
+    const permission30: CreatePermissionDto = {
       permissionName: '删除单个权限',
       pid: 8,
       route: '',
       type: 3,
       permissionCode: 'btn.Permission.deleteOne',
     };
-    const permission29: CreatePermissionDto = {
+    const permission31: CreatePermissionDto = {
       permissionName: '批量删除权限',
       pid: 8,
       route: '',
       type: 3,
       permissionCode: 'btn.Permission.batchDelete',
     };
-    const permission30: CreatePermissionDto = {
+    const permission32: CreatePermissionDto = {
       permissionName: '修改权限',
       pid: 8,
       route: '',
       type: 3,
       permissionCode: 'btn.Permission.update',
     };
-    const permission31: CreatePermissionDto = {
+    const permission33: CreatePermissionDto = {
       permissionName: '查询单个权限',
       pid: 8,
       route: '',
       type: 3,
       permissionCode: 'btn.Permission.queryOne',
     };
-    const permission32: CreatePermissionDto = {
+    const permission34: CreatePermissionDto = {
       permissionName: '查询所有权限',
       pid: 8,
       route: '',
       type: 3,
       permissionCode: 'btn.Permission.queryAll',
     };
+    const permission35: CreatePermissionDto = {
+      permissionName: '重置权限搜索',
+      pid: 8,
+      route: '',
+      type: 3,
+      permissionCode: 'btn.Permission.resetQueryOne',
+    };
 
+    const permission36: CreatePermissionDto = {
+      permissionName: '新增目录级权限',
+      pid: 8,
+      route: '',
+      type: 3,
+      permissionCode: 'btn.Permission.addDirPermission',
+    };
+    const permission37: CreatePermissionDto = {
+      permissionName: '编辑目录级权限',
+      pid: 8,
+      route: '',
+      type: 3,
+      permissionCode: 'btn.Permission.updateDirPermission',
+    };
+    const permission38: CreatePermissionDto = {
+      permissionName: '删除目录级权限',
+      pid: 8,
+      route: '',
+      type: 3,
+      permissionCode: 'btn.Permission.deleteDirPermission',
+    };
+    const permission39: CreatePermissionDto = {
+      permissionName: '新增菜单级权限',
+      pid: 8,
+      route: '',
+      type: 3,
+      permissionCode: 'btn.Permission.addMenuPermission',
+    };
+    const permission40: CreatePermissionDto = {
+      permissionName: '编辑菜单级权限',
+      pid: 8,
+      route: '',
+      type: 3,
+      permissionCode: 'btn.Permission.updateMenuPermission',
+    };
+    const permission41: CreatePermissionDto = {
+      permissionName: '删除菜单级权限',
+      pid: 8,
+      route: '',
+      type: 3,
+      permissionCode: 'btn.Permission.deleteMenuPermission',
+    };
+    const permission42: CreatePermissionDto = {
+      permissionName: '新增按钮级权限',
+      pid: 8,
+      route: '',
+      type: 3,
+      permissionCode: 'btn.Permission.addBtnPermission',
+    };
+    const permission43: CreatePermissionDto = {
+      permissionName: '编辑按钮级权限',
+      pid: 8,
+      route: '',
+      type: 3,
+      permissionCode: 'btn.Permission.updateBtnPermission',
+    };
+    const permission44: CreatePermissionDto = {
+      permissionName: '删除按钮级权限',
+      pid: 8,
+      route: '',
+      type: 3,
+      permissionCode: 'btn.Permission.deleteBtnPermission',
+    };
     await this.permissionsRepository.save(permission0);
     await this.permissionsRepository.save(permission1);
     await this.permissionsRepository.save(permission2);
@@ -368,6 +455,18 @@ export class AppService {
     await this.permissionsRepository.save(permission30);
     await this.permissionsRepository.save(permission31);
     await this.permissionsRepository.save(permission32);
+    await this.permissionsRepository.save(permission33);
+    await this.permissionsRepository.save(permission34);
+    await this.permissionsRepository.save(permission35);
+    await this.permissionsRepository.save(permission36);
+    await this.permissionsRepository.save(permission37);
+    await this.permissionsRepository.save(permission38);
+    await this.permissionsRepository.save(permission39);
+    await this.permissionsRepository.save(permission40);
+    await this.permissionsRepository.save(permission41);
+    await this.permissionsRepository.save(permission42);
+    await this.permissionsRepository.save(permission43);
+    await this.permissionsRepository.save(permission44);
 
     // 分配角色
     const userIdDto1: UserIdDto = { id: 1 };
@@ -395,7 +494,8 @@ export class AppService {
     const assignPermissionDt1: AssignPermissionDto = {
       ids: [
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-        21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+        39, 40, 41, 42, 43, 44,
       ],
     };
     // 不存某个角色有父级权限但其子权限全没选的情况

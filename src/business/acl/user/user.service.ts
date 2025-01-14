@@ -267,7 +267,6 @@ export class UserService {
       if (!user) {
         return { code: ResultCode.USER_NOT_FOUND };
       }
-      // TODO: 添加事务
       // 先清空中间表中相关数据
       await this.userRoleRepository.delete({ userId: deleteUserDto.id });
       // 再删除用户
